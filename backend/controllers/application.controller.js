@@ -5,29 +5,29 @@ import { Storage } from "../utils/supabaseStorage.js";
 import { applicationStatusMailer } from "../utils/sendEmail.js";
 import { whatsAppMailer } from "../utils/sendWhatsApp.js";
 
-async function notifyAccepted(application) {
+async function notifyStatusChange(application, status) {
   const applicantName = application.applicant?.fullName || "there";
   const jobTitle = application.job?.jobTitle || "the role";
   const companyName = application.job?.postedBy?.companyName || application.job?.postedBy?.fullName || "The employer";
+  const whatsAppText = status === "accepted"
+    ? `Congratulations ${applicantName}! ${companyName} has accepted your application for ${jobTitle} on Hirelo. They may reach out to you directly with next steps.`
+    : `Hi ${applicantName}, ${companyName} has reviewed your application for ${jobTitle} on Hirelo and decided not to move forward at this time. Thank you for your interest — we encourage you to keep exploring other opportunities on Hirelo.`;
 
   if (application.applicant?.email) {
     try {
       await applicationStatusMailer.send(application.applicant.email, {
-        applicantName, jobTitle, companyName, status: "accepted",
+        applicantName, jobTitle, companyName, status,
       });
     } catch (error) {
-      console.error("Acceptance email failed:", error.code || error.message);
+      console.error(`${status} email failed:`, error.code || error.message);
     }
   }
 
   if (application.applicant?.phoneNumber) {
     try {
-      await whatsAppMailer.send(
-        application.applicant.phoneNumber,
-        `Congratulations ${applicantName}! ${companyName} has accepted your application for ${jobTitle} on Hirelo. They may reach out to you directly with next steps.`,
-      );
+      await whatsAppMailer.send(application.applicant.phoneNumber, whatsAppText);
     } catch (error) {
-      console.error("Acceptance WhatsApp message failed:", error.code || error.message);
+      console.error(`${status} WhatsApp message failed:`, error.code || error.message);
     }
   }
 }
@@ -172,8 +172,8 @@ export const updateApplicationStatus = async (req, res) => {
       data: await Storage.applicationResponse(application),
     });
 
-    if (status === "accepted") {
-      notifyAccepted(application).catch((error) => console.error("Acceptance notification failed:", error.message));
+    if (status === "accepted" || status === "rejected") {
+      notifyStatusChange(application, status).catch((error) => console.error(`${status} notification failed:`, error.message));
     }
   } catch (error) {
     res.status(500).json({
