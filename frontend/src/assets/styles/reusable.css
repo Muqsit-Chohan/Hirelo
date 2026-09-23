@@ -1,0 +1,13 @@
+.h1-tag {
+    Font-size: 32px;
+    Font-weight: bold;
+    /* Margin-top: 0.67em; */
+    /* Margin-bottom: 0.67em; */
+font-family: 'Nunito', sans-serif;
+
+}
+
+.body-color {
+  background-color:#20365c;
+  color: white;
+}

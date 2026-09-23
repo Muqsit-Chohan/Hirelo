@@ -1,0 +1,2 @@
+Built-in image_gen edit. Asset: workspace-spatial-blue.png.
+Prompt: Edit target: attached job workspace illustration. Change only the color palette: replace all forest green, sage and lime objects and accents with muted slate blue #4567a2, powder blue #dbe7ff and pale periwinkle. Change warm ivory backdrop to very pale cool white #f5f7fb. Preserve composition, floating document cards, check tile, sphere, frosted glass materials, lighting, shadows and object proportions. Minimal premium spatial 3D render. No text or logos.
